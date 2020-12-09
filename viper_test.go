@@ -24,9 +24,9 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/mitchellh/mapstructure"
+	"github.com/morysky/viper/internal/testutil"
 	"github.com/spf13/afero"
 	"github.com/spf13/cast"
-	"github.com/spf13/morysky/internal/testutil"
 	"github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
