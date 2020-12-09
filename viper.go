@@ -215,6 +215,8 @@ type Viper struct {
 	properties *properties.Properties
 
 	onConfigChange func(fsnotify.Event)
+
+	lock *sync.RWMutex
 }
 
 // New returns an initialized Viper instance.
@@ -232,6 +234,7 @@ func New() *Viper {
 	v.env = make(map[string][]string)
 	v.aliases = make(map[string]string)
 	v.typeByDefValue = false
+	v.lock = &sync.RWMutex{}
 
 	return v
 }
@@ -559,6 +562,9 @@ func (v *Viper) searchMap(source map[string]interface{}, path []string) interfac
 	if len(path) == 0 {
 		return source
 	}
+
+	v.lock.RLock()
+	defer v.lock.RUnlock()
 
 	next, ok := source[path[0]]
 	if ok {
@@ -1401,6 +1407,9 @@ func (v *Viper) Set(key string, value interface{}) {
 	path := strings.Split(key, v.keyDelim)
 	lastKey := strings.ToLower(path[len(path)-1])
 	deepestMap := deepSearch(v.override, path[0:len(path)-1])
+
+	v.lock.Lock()
+	defer v.lock.Unlock()
 
 	// set innermost value
 	deepestMap[lastKey] = value
